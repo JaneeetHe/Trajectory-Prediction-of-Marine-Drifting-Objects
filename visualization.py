@@ -7,23 +7,25 @@ from matplotlib.gridspec import GridSpec
 models = [
     "Advection\n(Tier 1)",
     "PC-RF\n(Tier 3)",
+    "LSTM\n(vanilla)",
     "LSTM\n(phys-residual)",
+    "LSTM\n(phys-res+loss)",
     "Transformer\n(phys-residual)",
 ]
 
-mae_lat  = [0.05097, 0.04022, 0.03429, 0.03576]
-mae_lon  = [0.07267, 0.05906, 0.05254, 0.05433]
-mean_geo = [8.721,   6.859,   5.880,   8.570]
-med_geo  = [6.610,   5.147,   4.280,   5.032]
+mae_lat  = [0.05097, 0.04022, 0.03497, 0.03429, 0.03427, 0.03576]
+mae_lon  = [0.07267, 0.05906, 0.05311, 0.05254, 0.05273, 0.05433]
+mean_geo = [8.721,   6.859,   6.068,   5.880,   5.885,   8.570]
+med_geo  = [6.610,   5.147,   4.491,   4.280,   4.276,   5.032]
 
-COLORS      = ["#7F77DD", "#1D9E75", "#D85A30", "#BA7517"]
-COLORS_LITE = ["#AFA9EC", "#5DCAA5", "#F0997B", "#EF9F27"]
+COLORS      = ["#7F77DD", "#1D9E75", "#378ADD", "#D85A30", "#C0472A", "#BA7517"]
+COLORS_LITE = ["#AFA9EC", "#5DCAA5", "#85B7EB", "#F0997B", "#E07060", "#EF9F27"]
 TEXT   = "#e8edf2"
 MUTE   = "#9aaabb"
 ACCENT = "#F0997B"
 
-x     = np.arange(len(models))
-width = 0.38          # wider bars → tighter gaps between groups
+x     = np.arange(len(models)) * 0.78   # compress group spacing
+width = 0.34          # slightly narrower to fit 6 groups cleanly
 
 # font size constants — change here to tune globally
 FS_TICK   = 15        # x/y tick labels
@@ -42,7 +44,7 @@ def style_ax(ax):
     ax.set_axisbelow(True)
 
 # ── Figure ────────────────────────────────────────────────────────────────────
-fig = plt.figure(figsize=(14, 9), facecolor="none")
+fig = plt.figure(figsize=(13, 9), facecolor="none")
 gs  = GridSpec(2, 1, figure=fig,
                hspace=0.38,
                left=0.07, right=0.97,
@@ -66,8 +68,8 @@ for rect, val in zip(list(b1) + list(b2), mean_geo + med_geo):
              f"{val:.2f}", ha="center", va="bottom",
              fontsize=FS_VAL, color=TEXT, fontweight="bold")
 
-# bracket annotations
-for (i, j), yoff in zip([(0, 1), (1, 2)], [1.6, 1.2]):
+# bracket annotations: Advection→PC-RF, PC-RF→LSTM vanilla, vanilla→phys-residual
+for (i, j), yoff in zip([(0, 1), (1, 2), (2, 3)], [1.8, 1.4, 1.0]):
     pct = (mean_geo[i] - mean_geo[j]) / mean_geo[i] * 100
     xf  = x[i] - width / 2
     xt  = x[j] - width / 2
@@ -114,8 +116,8 @@ ax2.set_title("MAE lat / lon  (↓ lower is better)",
               color=TEXT, fontsize=FS_TITLE, fontweight="bold", pad=10)
 
 ax2.annotate("lon error > lat error\nacross all models",
-             xy=(3 + width / 2, mae_lon[3]),
-             xytext=(2.05, 0.083),
+             xy=(5 + width / 2, mae_lon[5]),
+             xytext=(3.2, 0.083),
              fontsize=FS_ANNOT - 1, color=ACCENT, fontstyle="italic",
              arrowprops=dict(arrowstyle="->", color=ACCENT,
                              lw=0.9, connectionstyle="arc3,rad=0.25"))
@@ -129,7 +131,7 @@ ax2.legend(handles=[pl, pn], fontsize=FS_LEGEND,
 # ── Shared model color legend ─────────────────────────────────────────────────
 patches = [mpatches.Patch(facecolor=c, label=m.replace("\n", " "))
            for c, m in zip(COLORS, models)]
-fig.legend(handles=patches, loc="lower center", ncol=4,
+fig.legend(handles=patches, loc="lower center", ncol=6,
            fontsize=FS_LEGEND, frameon=False, labelcolor=TEXT,
            bbox_to_anchor=(0.52, 0.01))
 
