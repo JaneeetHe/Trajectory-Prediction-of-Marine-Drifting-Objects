@@ -21,12 +21,13 @@ This project addresses the problem of predicting the future trajectory of marine
 ## 📁 Repository Structure
 
 ```
-├── data_processing.ipynb        # Raw NetCDF → supervised windows
-├── baseline_models.ipynb        # Physics & classical ML baselines
-├── lstm_experiments.ipynb       # LSTM variants (vanilla / phys-residual / phys-res+loss)
-├── baseline_metrics.csv         # Evaluation results for baseline models
-├── loss_1.png                   # Training loss curve (experiment 1)
-├── loss_2.png                   # Training loss curve (experiment 2)
+├── Data_Processing/             # Raw NetCDF → supervised windows pipeline
+├── baselines/                   # Physics & classical ML baseline models
+├── lstm/                        # LSTM variants & visualizations
+├── Transformer/                 # Transformer + Neural ODE model
+├── ECE228_finalproject_Proposal.pdf  # Project proposal
+├── model_comparison.png         # Model performance comparison chart
+├── visualization.py             # Visualization utilities
 └── README.md
 ```
 
@@ -149,9 +150,10 @@ print(y_train.shape)  # (N, 2)
 ```
 
 Run the notebooks in order:
-1. `data_processing.ipynb` — preprocess raw NetCDF files
-2. `baseline_models.ipynb` — train and evaluate physics & ML baselines
-3. `lstm_experiments.ipynb` — train LSTM/Transformer variants
+1. `Data_Processing/` — preprocess raw NetCDF files into supervised windows
+2. `baselines/` — train and evaluate physics & classical ML baselines
+3. `lstm/` — train LSTM variants (vanilla / phys-residual / phys-res+loss)
+4. `Transformer/` — train Transformer + Neural ODE model
 
 ---
 
