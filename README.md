@@ -1,7 +1,6 @@
 # 🌊 Trajectory Prediction of Marine Drifting Objects
 
 > **ECE/SIOC 228 Final Project — Team 32, UC San Diego (May 2026)**  
-> Ruixin Fu · Yiting Wang · Jingyi He · Danni Ma
 
 ---
 
