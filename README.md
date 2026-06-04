@@ -33,6 +33,7 @@ This project addresses the problem of predicting the future trajectory of marine
 ---
 
 ## 🗂️ Dataset
+Processed dataset can be accessed through: https://drive.google.com/file/d/1ikM6D7DGM3l7IfNF2OuA4xBZGK5hquAL/view?usp=sharing
 
 Raw data is organized by year under `raw_Data/` and processed into supervised windows under `processed_Data/`:
 
