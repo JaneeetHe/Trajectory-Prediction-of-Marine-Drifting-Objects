@@ -92,6 +92,13 @@ def physics_speed_penalty(pred_delta, cur_lat, max_speed=2.0):
     return torch.relu(speed - max_speed).mean()
 
 
+# alternative physics penalty: encourage predicted displacement direction to align with advection prior
+def direction_consistency_penalty(pred_delta, adv_delta, eps=1e-8):
+    pred_n = pred_delta / (torch.norm(pred_delta, dim=-1, keepdim=True) + eps)
+    adv_n  = adv_delta  / (torch.norm(adv_delta,  dim=-1, keepdim=True) + eps)
+    return (1.0 - (pred_n * adv_n).sum(dim=-1)).mean()
+
+
 # == LSTM Model ==
 class DrifterLSTM(nn.Module):
     def __init__(self, input_dim=21, hidden_dim=128, num_layers=2, dropout=0.1):
@@ -128,6 +135,7 @@ DEFAULT_CFG = dict(
     input_dim=21, hidden_dim=128, num_layers=2, dropout=0.1,
     lr=1e-3, eta_min=1e-5, batch_size=256, epochs=50, patience=7,
     physics_informed=False, lambda_phys=0.0, seed=42, gpu_resident=True,
+    penalty_type='speed',   # 'speed' or 'direction'
 )
 
 
@@ -165,7 +173,10 @@ def train_model(d, cfg, label='LSTM'):
             pred = net_out + advb if physics else net_out
             loss = F.mse_loss(pred, yb)
             if lam > 0:
-                loss = loss + lam * physics_speed_penalty(pred, latb)
+                if cfg['penalty_type'] == 'direction':
+                    loss = loss + lam * direction_consistency_penalty(pred, advb)
+                else:
+                    loss = loss + lam * physics_speed_penalty(pred, latb)
             loss.backward()
             opt.step()
             running += loss.item() * len(xb)
